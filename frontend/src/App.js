@@ -39,16 +39,14 @@ function App() {
         <>
             <Router>
                 <Routes>
-                    <Route exact path="/login" element={<Login />} />
-                    <Route exact path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                     <Route
-                        exact
                         path="/forgotpassword"
                         element={<ForgotPassword />}
                     />
-                    <Route exact path="/" element={renderNavbar(<Home />)} />
+                    <Route path="/" element={renderNavbar(<Home />)} />
                     <Route
-                        exact
                         path="/user/:id"
                         element={renderNavbar(
                             <>
@@ -58,7 +56,6 @@ function App() {
                         )}
                     />
                     <Route
-                        exact
                         path="/user/:id/questions"
                         element={renderNavbar(
                             <>
@@ -68,7 +65,6 @@ function App() {
                         )}
                     />
                     <Route
-                        exact
                         path="/user/:id/editprofile"
                         element={renderNavbar(
                             <>

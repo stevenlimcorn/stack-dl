@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Link from "@mui/material/Link";
+import { useNavigate, Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
 import { register, authReset } from "../features/auth/authSlice";
@@ -218,7 +217,7 @@ function Register() {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="/login" variant="body2">
+                                <Link to="/login">
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>

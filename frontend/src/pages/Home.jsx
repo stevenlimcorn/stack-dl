@@ -5,6 +5,7 @@ import Spinner from "../components/Spinner";
 import { getAllQuestions, reset } from "../features/questions/questionSlice";
 import QuestionItem from "../components/QuestionItem";
 import { Box, Button, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
 function Home() {
     const navigate = useNavigate();
@@ -34,7 +35,11 @@ function Home() {
                 }}
             >
                 <Typography variant="h6">Latest Questions</Typography>
-                <Button variant="contained" href="/questions/ask">
+                <Button
+                    variant="contained"
+                    to="/questions/ask"
+                    component={Link}
+                >
                     Create Question
                 </Button>
             </Box>

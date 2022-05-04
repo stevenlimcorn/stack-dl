@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
@@ -143,7 +143,7 @@ function Navbar({ drawerWidth }) {
                             >
                                 Logout
                             </Button>
-                            <Button href={`/user/${user._id}`}>
+                            <Button component={Link} to={`/user/${user._id}`}>
                                 <ColoredAvatar
                                     name={`${user.firstName} ${user.lastName}`}
                                 />
@@ -152,15 +152,17 @@ function Navbar({ drawerWidth }) {
                     ) : (
                         <>
                             <Button
+                                component={Link}
                                 sx={{ mx: 1 }}
-                                href="/login"
+                                to="/login"
                                 color="inherit"
                             >
                                 Login
                             </Button>
                             <Button
+                                component={Link}
                                 sx={{ mx: 1 }}
-                                href="/register"
+                                to="/register"
                                 color="inherit"
                             >
                                 Register

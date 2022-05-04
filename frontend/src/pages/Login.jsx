@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ import {
     FormControlLabel,
     Checkbox,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
 function Login() {
     // states redux
@@ -143,7 +143,7 @@ function Login() {
                             </Grid>
                             <Grid item>
                                 <Link
-                                    href="/forgotpassword"
+                                    to="/forgotpassword"
                                     variant="body2"
                                     display="flex"
                                     justifyContent="center"
@@ -164,7 +164,7 @@ function Login() {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="/register" variant="body2">
+                            <Link to="/register" variant="body2">
                                 Do not have an account? Sign up
                             </Link>
                         </Grid>

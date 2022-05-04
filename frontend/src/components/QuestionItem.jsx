@@ -1,6 +1,7 @@
 import moment from "moment";
-import { Box, Link, Typography } from "@mui/material";
+import { Box, Typography, Link as UiLink } from "@mui/material";
 import ColoredAvatar from "./ColoredAvatar";
+import { Link } from "react-router-dom";
 
 function QuestionItem({ question }) {
     return (
@@ -31,8 +32,8 @@ function QuestionItem({ question }) {
                     }}
                 >
                     <Link
-                        href={`/user/${question.question_user._id}`}
-                        sx={{ textDecoration: "None" }}
+                        to={`/user/${question.question_user._id}`}
+                        style={{ textDecoration: "none" }}
                     >
                         <ColoredAvatar
                             name={`${question.question_user.firstName} ${question.question_user.lastName}`}
@@ -46,8 +47,8 @@ function QuestionItem({ question }) {
                         }}
                     >
                         <Link
-                            href={`/user/${question.question_user._id}`}
-                            sx={{
+                            to={`/user/${question.question_user._id}`}
+                            style={{
                                 textDecoration: "None",
                                 "&:hover": {
                                     textDecoration: "underline",
@@ -85,17 +86,13 @@ function QuestionItem({ question }) {
                     mt: 2,
                 }}
             >
-                <Link
-                    href={`/questions/${question._id}`}
-                    sx={{
-                        textDecoration: "None",
-                        "&:hover": {
-                            textDecoration: "underline",
-                        },
-                    }}
+                <UiLink
+                    component={Link}
+                    to={`/questions/${question._id}`}
+                    style={{ textDecoration: "none", color: "primary" }}
                 >
                     <Typography variant="h6">{question.title}</Typography>
-                </Link>
+                </UiLink>
                 {/* <Typography>{question.description}</Typography> */}
             </Box>
         </Box>

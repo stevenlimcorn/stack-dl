@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 // import { useNavigate } from "react-router-dom";
 import Spinner from "../../components/Spinner";
 import AlertMessage from "../../components/AlertMessage";
+import { Link } from "react-router-dom";
 
 function EditProfile() {
     // alerts for incorrect forms
@@ -154,7 +155,11 @@ function EditProfile() {
                     <Button type="submit" variant="contained" sx={{ mr: 2 }}>
                         Save Profile
                     </Button>
-                    <Button href={`/user/${user._id}`} variant="contained">
+                    <Button
+                        component={Link}
+                        to={`/user/${user._id}`}
+                        variant="contained"
+                    >
                         Cancel
                     </Button>
                 </Box>

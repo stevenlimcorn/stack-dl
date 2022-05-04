@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Button, Divider, Typography, Toolbar, Link } from "@mui/material";
+import { Box, Button, Divider, Typography, Toolbar } from "@mui/material";
 import ColoredAvatar from "../../components/ColoredAvatar";
 import moment from "moment";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../../features/questions/questionSlice";
 import Spinner from "../../components/Spinner";
 import authService from "../../features/auth/authService";
+import { Link } from "react-router-dom";
 
 function Profile({ underline }) {
     // helper functions
@@ -40,7 +41,7 @@ function Profile({ underline }) {
     const [userProfile, setUserProfile] = useState(null);
     // asynchronous function (render function)
     useEffect(() => {
-        if (params.id === user._id) {
+        if (user && params.id === user._id) {
             setUserProfile(user);
             setIsUser(true);
             dispatch(getQuestionsByUserId(user._id));
@@ -187,7 +188,7 @@ function Profile({ underline }) {
                                     noWrap
                                     key={section.title}
                                     variant="body2"
-                                    href={section.url}
+                                    to={section.url}
                                     sx={{
                                         lineHeight: "46px",
                                         textDecoration: "none",
@@ -206,7 +207,7 @@ function Profile({ underline }) {
                                     noWrap
                                     key={section.title}
                                     variant="body2"
-                                    href={section.url}
+                                    to={section.url}
                                     sx={{
                                         lineHeight: "46px",
                                         textDecoration: "none",

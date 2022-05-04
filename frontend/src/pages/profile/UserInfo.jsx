@@ -20,7 +20,7 @@ function UserQuestions() {
     // const [isUser, setIsUser] = useState(false);
     // asynchronous function (render function)
     useEffect(() => {
-        if (params.id === user._id) {
+        if (user && params.id === user._id) {
             // setIsUser(true);
         }
         dispatch(getQuestionsByUserId(params.id));
