@@ -1,6 +1,5 @@
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import HomeIcon from "@mui/icons-material/Home";
@@ -21,8 +20,10 @@ import InputBase from "@mui/material/InputBase";
 import Button from "@mui/material/Button";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
-import { logout, reset } from "../../features/auth/authSlice";
+import { logout, authReset } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import ColoredAvatar from "../ColoredAvatar";
+import { Link } from "react-router-dom";
 
 function Navbar({ drawerWidth }) {
     // states
@@ -33,7 +34,7 @@ function Navbar({ drawerWidth }) {
 
     const onLogout = () => {
         dispatch(logout());
-        dispatch(reset());
+        dispatch(authReset());
         navigate("/");
     };
 
@@ -41,6 +42,7 @@ function Navbar({ drawerWidth }) {
         setMobileOpen(!mobileOpen);
     };
 
+    // Search bar styles
     const Search = styled("div")(({ theme }) => ({
         position: "relative",
         borderRadius: theme.shape.borderRadius,
@@ -51,7 +53,7 @@ function Navbar({ drawerWidth }) {
         marginRight: theme.spacing(1),
         marginLeft: 0,
         width: "100%",
-        [theme.breakpoints.up("sm")]: {
+        [theme.breakpoints.up("md")]: {
             marginLeft: theme.spacing(1),
         },
     }));
@@ -81,10 +83,9 @@ function Navbar({ drawerWidth }) {
     }));
 
     const menuItems = [
-        { label: "Home", path: "/home", icon: <HomeIcon /> },
+        { label: "Home", path: "/", icon: <HomeIcon /> },
         { label: "Questions", path: "/accounts", icon: <QuestionAnswerIcon /> },
         { label: "Tags", path: "/organizations", icon: <LocalOfferIcon /> },
-        { label: "Bookmarks", path: "/organizations", icon: <BookmarkIcon /> },
     ];
 
     const drawer = (
@@ -92,9 +93,9 @@ function Navbar({ drawerWidth }) {
             <Toolbar />
             <Divider />
             <List>
-                {menuItems.map(({ label, icon }) => {
+                {menuItems.map(({ label, icon, path }) => {
                     return (
-                        <ListItem button key={label}>
+                        <ListItem button component={Link} key={label} to={path}>
                             <ListItemIcon>{icon}</ListItemIcon>
                             <ListItemText primary={label} />
                         </ListItem>
@@ -110,8 +111,8 @@ function Navbar({ drawerWidth }) {
             <AppBar
                 position="fixed"
                 sx={{
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
+                    width: { md: `calc(100% - ${drawerWidth}px)` },
+                    ml: { md: `${drawerWidth}px` },
                 }}
             >
                 <Toolbar>
@@ -120,7 +121,7 @@ function Navbar({ drawerWidth }) {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: "none" } }}
+                        sx={{ mr: 2, display: { md: "none" } }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -134,13 +135,20 @@ function Navbar({ drawerWidth }) {
                         />
                     </Search>
                     {user ? (
-                        <Button
-                            sx={{ mx: 1 }}
-                            onClick={onLogout}
-                            color="inherit"
-                        >
-                            Logout
-                        </Button>
+                        <>
+                            <Button
+                                sx={{ mx: 1 }}
+                                onClick={onLogout}
+                                color="inherit"
+                            >
+                                Logout
+                            </Button>
+                            <Button href={`/user/${user._id}`}>
+                                <ColoredAvatar
+                                    name={`${user.firstName} ${user.lastName}`}
+                                />
+                            </Button>
+                        </>
                     ) : (
                         <>
                             <Button
@@ -163,7 +171,7 @@ function Navbar({ drawerWidth }) {
             </AppBar>
             <Box
                 component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+                sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
                 aria-label="mailbox folders"
             >
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -175,7 +183,7 @@ function Navbar({ drawerWidth }) {
                         keepMounted: true, // Better open performance on mobile.
                     }}
                     sx={{
-                        display: { xs: "block", sm: "none" },
+                        display: { xs: "block", md: "none" },
                         "& .MuiDrawer-paper": {
                             boxSizing: "border-box",
                             width: drawerWidth,
@@ -187,7 +195,7 @@ function Navbar({ drawerWidth }) {
                 <Drawer
                     variant="permanent"
                     sx={{
-                        display: { xs: "none", sm: "block" },
+                        display: { xs: "none", md: "block" },
                         "& .MuiDrawer-paper": {
                             boxSizing: "border-box",
                             width: drawerWidth,

@@ -13,11 +13,9 @@ import {
     Grid,
     Button,
     TextField,
-    FormControlLabel,
-    Checkbox,
 } from "@mui/material";
 
-function Login() {
+function ForgotPassword() {
     // states redux
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,9 +27,8 @@ function Login() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        remember: false,
     });
-    const { email, password, remember } = formData;
+    const { email, password } = formData;
 
     // Functions
     const handleSubmit = (event) => {
@@ -40,7 +37,6 @@ function Login() {
         const userData = {
             email,
             password,
-            remember,
         };
 
         dispatch(login(userData));
@@ -50,13 +46,6 @@ function Login() {
         setFormData((prevState) => ({
             ...prevState,
             [e.target.name]: e.target.value,
-        }));
-    };
-
-    const handleRememberMe = (e) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            remember: e.target.checked,
         }));
     };
 
@@ -92,7 +81,7 @@ function Login() {
                     variant="h5"
                     sx={{ textAlign: "center" }}
                 >
-                    Log in
+                    Password Reset
                 </Typography>
                 <Box
                     component="form"
@@ -106,52 +95,12 @@ function Login() {
                                 required
                                 fullWidth
                                 id="email"
-                                label="Email Address"
+                                label="Enter your email address"
                                 value={email}
                                 onChange={onChange}
                                 name="email"
                                 autoComplete="email"
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                onChange={onChange}
-                                value={password}
-                                id="password"
-                                autoComplete="new-password"
-                            />
-                        </Grid>
-                        <Grid
-                            item
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            width="100%"
-                        >
-                            <Grid item>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox onChange={handleRememberMe} />
-                                    }
-                                    label="remember me"
-                                />
-                            </Grid>
-                            <Grid item>
-                                <Link
-                                    href="/forgotpassword"
-                                    variant="body2"
-                                    display="flex"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                >
-                                    Forgot password
-                                </Link>
-                            </Grid>
                         </Grid>
                     </Grid>
                     <Button
@@ -160,12 +109,12 @@ function Login() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Log In
+                        Submit
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="/register" variant="body2">
-                                Do not have an account? Sign up
+                            <Link href="/" variant="body2">
+                                {"< Go back to home page"}
                             </Link>
                         </Grid>
                     </Grid>
@@ -182,4 +131,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default ForgotPassword;

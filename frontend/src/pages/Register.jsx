@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Toolbar from "@mui/material/Toolbar";
-import { register, reset } from "../features/auth/authSlice";
-
+import { register, authReset } from "../features/auth/authSlice";
+import Spinner from "../components/Spinner";
 import {
     Container,
     CssBaseline,
@@ -13,15 +13,16 @@ import {
     Grid,
     Button,
     TextField,
-    CircularProgress,
 } from "@mui/material";
 import AlertMessage from "../components/AlertMessage";
+import PasswordStrengthBar from "react-password-strength-bar";
 
 function Register() {
     // setting data
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
+        userName: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -29,8 +30,11 @@ function Register() {
 
     // alerts for incorrect forms
     const [snackbar, setSnackbar] = useState("");
+    // password strength
+    const [strength, setStrength] = useState(0);
     // form data
-    const { firstName, lastName, email, password, confirmPassword } = formData;
+    const { firstName, lastName, userName, email, password, confirmPassword } =
+        formData;
 
     // states redux
     const navigate = useNavigate();
@@ -51,7 +55,7 @@ function Register() {
             navigate("/");
         }
 
-        dispatch(reset());
+        dispatch(authReset());
     }, [user, isError, isSuccess, message, navigate, dispatch]);
 
     // updates state variables for form data changes
@@ -65,6 +69,7 @@ function Register() {
     // submit form
     const handleSubmit = (event) => {
         event.preventDefault();
+        console.log(strength);
 
         if (password !== confirmPassword) {
             // create error alert
@@ -73,10 +78,17 @@ function Register() {
                 key: Math.random(),
                 severity: "error",
             });
+        } else if (strength < 3) {
+            setSnackbar({
+                msg: "Password too weak!",
+                key: Math.random(),
+                severity: "error",
+            });
         } else {
             const userData = {
                 firstName,
                 lastName,
+                userName,
                 email,
                 password,
             };
@@ -84,13 +96,10 @@ function Register() {
         }
     };
 
-    if (isLoading) {
-        <CircularProgress />;
-    }
-
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
+            {isLoading ? <Spinner isLoading={isLoading} /> : null}
             <Box
                 sx={{
                     marginTop: 8,
@@ -144,6 +153,18 @@ function Register() {
                                 <TextField
                                     required
                                     fullWidth
+                                    id="username"
+                                    label="Username"
+                                    value={userName}
+                                    onChange={onChange}
+                                    name="userName"
+                                    autoComplete="username"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
                                     id="email"
                                     label="Email Address"
                                     value={email}
@@ -163,6 +184,14 @@ function Register() {
                                     value={password}
                                     id="password"
                                     autoComplete="new-password"
+                                />
+                                <PasswordStrengthBar
+                                    password={password}
+                                    minLength={6}
+                                    onChangeScore={(score, feedback) => {
+                                        console.log(score);
+                                        setStrength(score);
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12}>

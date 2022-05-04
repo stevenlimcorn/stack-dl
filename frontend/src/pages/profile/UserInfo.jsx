@@ -1,44 +1,48 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import Spinner from "../components/Spinner";
-import { getAllQuestions, reset } from "../features/questions/questionSlice";
-import QuestionItem from "../components/QuestionItem";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import {
+    getQuestionsByUserId,
+    reset,
+} from "../../features/questions/questionSlice";
+import Spinner from "../../components/Spinner";
+import QuestionItem from "../../components/QuestionItem";
 
-function Home() {
+function UserQuestions() {
+    // End Helper function
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { questions, isLoading, isError, message } = useSelector(
-        (state) => state.questions
-    );
+    const params = useParams();
 
+    const { user } = useSelector((state) => state.auth);
+    const { questions, isLoading } = useSelector((state) => state.questions);
+    // const [isUser, setIsUser] = useState(false);
     // asynchronous function (render function)
     useEffect(() => {
-        dispatch(getAllQuestions());
+        if (params.id === user._id) {
+            // setIsUser(true);
+        }
+        dispatch(getQuestionsByUserId(params.id));
         return () => {
             dispatch(reset());
         };
-    }, [navigate, isError, message, dispatch]);
-
+    }, [navigate, dispatch, params, user]);
     return (
         <>
             {isLoading ? <Spinner isLoading={isLoading} /> : null}
+            <Typography></Typography>
             <Box
                 sx={{
                     width: "100%",
                     display: "flex",
-                    justifyContent: "space-between",
                     alignContent: "center",
                     mb: { xs: 3, md: 4 },
+                    backgroundColor: "white",
+                    p: "2.5%",
+                    flexDirection: "column",
                 }}
             >
-                <Typography variant="h6">Latest Questions</Typography>
-                <Button variant="contained" href="/questions/ask">
-                    Create Question
-                </Button>
-            </Box>
-            <section className="content">
                 {questions.length > 0 ? (
                     <div className="questions">
                         {questions.map((question) => (
@@ -51,9 +55,9 @@ function Home() {
                 ) : (
                     <h3>You have not created any questions.</h3>
                 )}
-            </section>
+            </Box>
         </>
     );
 }
 
-export default Home;
+export default UserQuestions;

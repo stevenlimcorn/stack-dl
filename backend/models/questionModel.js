@@ -20,8 +20,12 @@ const questionSchema = mongoose.Schema(
             required: [true, "Please add number of votes"],
         },
         tags: {
-            type: Array,
+            type: [String],
             required: [true, "Please add tags"],
+        },
+        description: {
+            type: mongoose.Schema.Types.Mixed,
+            required: [true, "Please add descriptions"],
         },
     },
     {

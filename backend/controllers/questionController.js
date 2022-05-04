@@ -1,44 +1,80 @@
 const asyncHandler = require("express-async-handler");
+const { default: mongoose } = require("mongoose");
 
 const Question = require("../models/questionModel");
 const User = require("../models/userModel");
 
 // @desc    Get questions
 // @route   GET /api/questions
-// @access  Private
+// @access  Public
 const getAllQuestions = asyncHandler(async (req, res) => {
-    const questions = await Question.find();
-    res.status(200).json(questions);
+    // create a recommendation system that grabs the most related posts based on user's viewed posts, tags, questions posted
+    Question.aggregate([
+        {
+            $lookup: {
+                localField: "user",
+                from: "users", //the collection name, (bad)before i had Phrase as the model
+                foreignField: "_id",
+                as: "question_user",
+            },
+        },
+        { $unwind: "$question_user" },
+    ]).exec((err, questions) => {
+        if (err) {
+            res.status(400);
+            throw err;
+        } else {
+            res.status(200).json(questions);
+        }
+    });
 });
 
 // @desc    Get questions
 // @route   GET /api/questions
 // @access  Private
-const getUserQuestions = asyncHandler(async (req, res) => {
-    const questions = await Question.find({ user: req.user.id });
-    res.status(200).json(questions);
+const getQuestionsByUserId = asyncHandler(async (req, res) => {
+    Question.aggregate([
+        {
+            $match: {
+                user: mongoose.Types.ObjectId(req.params.id),
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "question_user",
+            },
+        },
+        { $unwind: "$question_user" },
+    ]).exec((err, questions) => {
+        if (err) {
+            res.status(400);
+            throw err;
+        } else {
+            res.status(200).json(questions);
+        }
+    });
 });
 
 // @desc    Set Question
 // @route   POST /api/questions
 // @access  Private
 const setQuestion = asyncHandler(async (req, res) => {
-    if (
-        !req.body.title ||
-        !req.body.views ||
-        !req.body.tags ||
-        !req.body.votes
-    ) {
-        res.status(400);
-        throw new Error("Please add a text field");
-    }
+    const { title, description, tags, views, votes } = req.body;
 
+    if (!title || !tags || !description || votes === null || views === null) {
+        res.status(400);
+        throw new Error("Please make sure all tags are added");
+    }
     const question = await Question.create({
         user: req.user.id,
-        title: req.body.title,
-        views: req.body.views,
-        votes: req.body.votes,
-        tags: req.body.tags,
+        title: title,
+        views: views,
+        votes: votes,
+        tags: tags,
+        description: description,
     });
     res.status(200).json(question);
 });
@@ -48,19 +84,18 @@ const setQuestion = asyncHandler(async (req, res) => {
 // @access  Private
 const updateQuestion = asyncHandler(async (req, res) => {
     const question = await Question.findById(req.params.id);
-    const user = await User.findById(req.user.id);
 
     if (!question) {
         res.status(400);
         throw new Error("Question not found");
     }
     // Check for user
-    if (!user) {
+    if (!req.user) {
         res.status(401);
         throw new Error("User not found");
     }
     // Make sure the logged in user matches the Question user
-    if (question.user.toString() !== user.id) {
+    if (question.user.toString() !== req.user.id) {
         res.status(401);
         throw new Error("User not authorized");
     }
@@ -79,14 +114,13 @@ const updateQuestion = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteQuestion = asyncHandler(async (req, res) => {
     const question = await Question.findById(req.params.id);
-    const user = await User.findById(req.user.id);
 
     if (!question) {
         res.status(400);
         throw new Error("Question not found");
     }
     // Check for user
-    if (!user) {
+    if (!req.user) {
         res.status(401);
         throw new Error("User not found");
     }
@@ -100,9 +134,9 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    getUserQuestions,
     setQuestion,
     updateQuestion,
     deleteQuestion,
     getAllQuestions,
+    getQuestionsByUserId,
 };
