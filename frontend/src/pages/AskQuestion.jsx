@@ -14,6 +14,7 @@ import Spinner from "../components/Spinner";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
 import { DropzoneArea } from "material-ui-dropzone";
+import axios from "axios";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -48,15 +49,33 @@ function QuestionForm() {
             });
             return;
         }
+        let imageSrc = [];
+        if (file.length > 0) {
+            // get secure url
+            const config = {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            };
+            const promise = file.map(async (file) => {
+                const uploadLink = await axios.get("/api/s3url");
+                await axios.put(uploadLink.data.url, file, config);
+                const imageUrl = uploadLink.data.url.split("?")[0];
+                return imageUrl;
+            });
+            let images = await Promise.all(promise);
+            imageSrc = imageSrc.concat(images);
+        }
         const questionData = {
             title,
             description,
             tags,
             views: 0,
             votes: 0,
+            images: imageSrc,
         };
         const json = await dispatch(createQuestion(questionData));
-        if (isError) {
+        if (json.meta.requestStatus === "rejected") {
             setSnackbar({
                 msg: "Please fill in the description.",
                 key: Math.random(),
@@ -294,6 +313,11 @@ function QuestionForm() {
                     </Button>
                 </Box>
             </form>
+            {/* {imageSrc.length > 0
+                ? imageSrc.forEach((img) => {
+                      <img src={img} alt="new" />;
+                  })
+                : null} */}
             {snackbar ? (
                 <AlertMessage
                     key={snackbar.key}

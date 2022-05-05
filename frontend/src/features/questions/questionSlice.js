@@ -28,6 +28,26 @@ export const createQuestion = createAsyncThunk(
     }
 );
 
+// payload consist of {id, answerData}
+export const addAnswerQuestion = createAsyncThunk(
+    "questions/addAnswerQuestion",
+    async (payload, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            console.log(payload);
+            return await questionService.addAnswerQuestion(payload, token);
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 // get user questions
 export const getAllQuestions = createAsyncThunk(
     "questions/getQuestions",
@@ -47,10 +67,27 @@ export const getAllQuestions = createAsyncThunk(
 );
 
 export const getQuestionsByUserId = createAsyncThunk(
-    "questions/getQuestionsById",
+    "questions/getQuestionsByUserId",
     async (id, thunkAPI) => {
         try {
             return await questionService.getQuestionsByUserId(id);
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const getQuestionById = createAsyncThunk(
+    "questions/getQuestionById",
+    async (id, thunkAPI) => {
+        try {
+            return await questionService.getQuestionById(id);
         } catch (error) {
             const message =
                 (error.response &&
@@ -103,6 +140,19 @@ export const questionSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+            .addCase(addAnswerQuestion.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addAnswerQuestion.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.questions = action.payload;
+            })
+            .addCase(addAnswerQuestion.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
             .addCase(getQuestionsByUserId.pending, (state) => {
                 state.isLoading = true;
             })
@@ -112,6 +162,19 @@ export const questionSlice = createSlice({
                 state.questions = action.payload;
             })
             .addCase(getQuestionsByUserId.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(getQuestionById.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getQuestionById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.questions = action.payload;
+            })
+            .addCase(getQuestionById.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

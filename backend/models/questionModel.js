@@ -27,6 +27,15 @@ const questionSchema = mongoose.Schema(
             type: mongoose.Schema.Types.Mixed,
             required: [true, "Please add descriptions"],
         },
+        images: {
+            type: [String],
+            required: false,
+        },
+        answers: {
+            type: [mongoose.Schema.Types.ObjectId],
+            required: false,
+            ref: "Answer",
+        },
     },
     {
         timestamps: true,

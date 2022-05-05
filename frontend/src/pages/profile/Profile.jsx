@@ -120,7 +120,11 @@ function Profile({ underline }) {
                             </Typography>
 
                             {isUser ? (
-                                <Button variant="contained">
+                                <Button
+                                    component={Link}
+                                    to="editprofile"
+                                    variant="contained"
+                                >
                                     Edit Profile
                                 </Button>
                             ) : null}

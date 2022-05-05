@@ -162,7 +162,7 @@ const forgottenPassword = asyncHandler(async (req, res) => {
 
 // @desc    Get user data
 // @route   Get /api/users/user
-// @access  Private
+// @access  Public
 const getUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id).select("-password");
     if (user) {
@@ -179,6 +179,56 @@ const getUser = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get user data
+// @route   Get /api/users/user
+// @access  Private
+const updateUser = asyncHandler(async (req, res) => {
+    const { firstName, lastName, userName, email } = req.body;
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+        res.status(400);
+        throw new Error("User doesn't exist");
+    }
+    if (email) {
+        if (!validateEmail(email)) {
+            res.status(400);
+            throw new Error("Please enter a proper email");
+        }
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+            res.status(400);
+            throw new Error("Email exist.");
+        }
+    }
+    if (userName) {
+        const userNameExists = await User.findOne({ userName });
+        if (userNameExists) {
+            res.status(400);
+            throw new Error("User Name exist.");
+        }
+    }
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+        new: true,
+    });
+    const userData = {
+        _id: updatedUser.id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        userName: updatedUser.userName,
+        email: updatedUser.email,
+        token: generateJWT(updatedUser._id),
+        createdAt: updatedUser.createdAt,
+    };
+    // check if user wants to remember me
+    if (req.cookies["user"] !== undefined) {
+        res.cookie("user", JSON.stringify(userData), {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+        });
+    }
+    res.status(200).json(userData);
+});
+
 const logout = asyncHandler(async (req, res) => {
     res.clearCookie("user");
     res.status(200).json({ message: "token cleared" });
@@ -190,4 +240,5 @@ module.exports = {
     loginUser,
     logout,
     getUser,
+    updateUser,
 };

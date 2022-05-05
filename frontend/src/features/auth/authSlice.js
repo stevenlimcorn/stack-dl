@@ -49,6 +49,25 @@ export const register = createAsyncThunk(
     }
 );
 
+export const updateUser = createAsyncThunk(
+    "auth/updateuser",
+    async (data, thunkAPI) => {
+        try {
+            const payload = data.newData;
+            const id = data.userId;
+            return await authService.updateUser(payload, user.token, id);
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 // forgotten password
 export const forgotPassword = createAsyncThunk(
     "auth/login",
@@ -116,6 +135,19 @@ export const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null;
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.user = action.payload;
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
     },
 });

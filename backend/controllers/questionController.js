@@ -3,6 +3,7 @@ const { default: mongoose } = require("mongoose");
 
 const Question = require("../models/questionModel");
 const User = require("../models/userModel");
+const Answer = require("../models/answerModel");
 
 // @desc    Get questions
 // @route   GET /api/questions
@@ -14,6 +15,32 @@ const getAllQuestions = asyncHandler(async (req, res) => {
             $lookup: {
                 localField: "user",
                 from: "users", //the collection name, (bad)before i had Phrase as the model
+                foreignField: "_id",
+                as: "question_user",
+            },
+        },
+        { $unwind: "$question_user" },
+    ]).exec((err, questions) => {
+        if (err) {
+            res.status(400);
+            throw err;
+        } else {
+            res.status(200).json(questions);
+        }
+    });
+});
+
+const getQuestionById = asyncHandler(async (req, res) => {
+    Question.aggregate([
+        {
+            $match: {
+                _id: mongoose.Types.ObjectId(req.params.id),
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
                 foreignField: "_id",
                 as: "question_user",
             },
@@ -62,7 +89,7 @@ const getQuestionsByUserId = asyncHandler(async (req, res) => {
 // @route   POST /api/questions
 // @access  Private
 const setQuestion = asyncHandler(async (req, res) => {
-    const { title, description, tags, views, votes } = req.body;
+    const { title, description, tags, views, votes, images } = req.body;
 
     if (!title || !tags || !description || votes === null || views === null) {
         res.status(400);
@@ -75,6 +102,7 @@ const setQuestion = asyncHandler(async (req, res) => {
         votes: votes,
         tags: tags,
         description: description,
+        images: images,
     });
     res.status(200).json(question);
 });
@@ -82,28 +110,30 @@ const setQuestion = asyncHandler(async (req, res) => {
 // @desc    Update Question
 // @route   PUT /api/questions/:id
 // @access  Private
-const updateQuestion = asyncHandler(async (req, res) => {
+const addAnswerQuestion = asyncHandler(async (req, res) => {
+    // check if question exists
     const question = await Question.findById(req.params.id);
-
     if (!question) {
         res.status(400);
         throw new Error("Question not found");
     }
-    // Check for user
-    if (!req.user) {
-        res.status(401);
-        throw new Error("User not found");
+    // create answer
+    const { answer, votes } = req.body;
+    if (!answer || votes === null) {
+        res.status(400);
+        throw new Error("Write an answer.");
     }
-    // Make sure the logged in user matches the Question user
-    if (question.user.toString() !== req.user.id) {
-        res.status(401);
-        throw new Error("User not authorized");
-    }
+    const createdAnswer = await Answer.create({
+        user: req.user.id,
+        answer: answer,
+        votes: votes,
+    });
     const updatedQuestion = await Question.findByIdAndUpdate(
         req.params.id,
-        req.body,
+        { $push: { answers: createdAnswer._id } },
         {
             new: true,
+            upsert: true,
         }
     );
     res.status(200).json(updatedQuestion);
@@ -135,8 +165,9 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 
 module.exports = {
     setQuestion,
-    updateQuestion,
+    addAnswerQuestion,
     deleteQuestion,
     getAllQuestions,
     getQuestionsByUserId,
+    getQuestionById,
 };

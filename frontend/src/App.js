@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import AskQuestion from "./pages/AskQuestion";
 import Question from "./pages/Question";
 import EditProfile from "./pages/profile/EditProfile";
+import ErrorPage from "./pages/404";
 
 const drawerWidth = 220;
 const renderNavbar = (children) => {
@@ -24,7 +25,6 @@ const renderNavbar = (children) => {
                     ml: { md: `${drawerWidth}px` },
                     p: { xs: 1.5, md: 3 },
                     width: { md: `calc(100% - ${drawerWidth}px)` },
-                    backgroundColor: "#ebf1f7",
                 }}
             >
                 <Toolbar />
@@ -80,6 +80,7 @@ function App() {
                         path="/questions/:id"
                         element={renderNavbar(<Question />)}
                     />
+                    <Route path="/404" element={renderNavbar(<ErrorPage />)} />
                 </Routes>
             </Router>
         </>
