@@ -3,29 +3,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
     reset,
     getQuestionById,
-    addAnswerQuestion,
+    // addAnswerQuestion,
 } from "../features/questions/questionSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { Typography, Box, Divider, Button } from "@mui/material";
 import moment from "moment";
 import ReactHtmlParser from "react-html-parser";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import ColoredAvatar from "../components/ColoredAvatar";
 import { Link } from "react-router-dom";
 import AlertMessage from "../components/AlertMessage";
+import {
+    answerReset,
+    createAnswer,
+    getAnswerByQuestionId,
+} from "../features/answers/answerSlice";
+import AnswerItem from "../components/AnswerItem";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 function Question() {
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { questions, isLoading, isSuccess, isError, message } = useSelector(
-        (state) => state.questions
-    );
+    const { questions, isError } = useSelector((state) => state.questions);
     const { user } = useSelector((state) => state.auth);
+    const { answers } = useSelector((state) => state.answers);
     const [answer, setAnswer] = useState({
         html: "",
         text: "",
@@ -63,14 +66,14 @@ function Question() {
             return;
         }
         const answerData = {
-            answer: answer.html,
-            votes: 0,
+            answer: answer,
+            questionId: params.id,
+            likes: [],
         };
-        const id = params.id;
-        const response = await dispatch(addAnswerQuestion({ id, answerData }));
+        const response = await dispatch(createAnswer(answerData));
         if (response.meta.requestStatus === "rejected") {
             setSnackbar({
-                msg: "Please fill in the description.",
+                msg: response.payload,
                 key: Math.random(),
                 severity: "error",
             });
@@ -81,24 +84,21 @@ function Question() {
                 html: "",
                 text: "",
             });
-            setSnackbar("");
-            navigate(`/questions/${response.payload._id}`);
+            navigate(`/${params.id}`);
         }
+        setSnackbar("");
     };
 
     useEffect(() => {
         if (!params.id.match(/^[0-9a-fA-F]{24}$/)) {
-            // navigate to 404
             navigate("/404");
         } else {
             dispatch(getQuestionById(params.id));
-        }
-        if (isError) {
-            // navigate to 404
-            navigate("/404");
+            dispatch(getAnswerByQuestionId(params.id));
         }
         return () => {
             dispatch(reset());
+            dispatch(answerReset());
         };
     }, [params, isError]);
 
@@ -135,7 +135,7 @@ function Question() {
                             </Typography>
                         </Box>
                     </Box>
-                    <Box
+                    {/* <Box
                         sx={{
                             display: "flex",
                             flexDirection: "column",
@@ -163,20 +163,38 @@ function Question() {
                                 {questions[0].question_user.userName}
                             </Typography>
                         </Link>
-                    </Box>
+                    </Box> */}
                 </Box>
                 <Divider />
-                <Box sx={{ display: "flex", flexDirection: "row", my: 2 }}>
+                <Box sx={{ my: 2 }}>
+                    <Typography variant="h6">Description</Typography>
                     <Box width="100%">
                         {parseHtml(questions[0].description.html)}
+                        <Typography fontSize="14px">
+                            Answers: {answers.length}
+                        </Typography>
                     </Box>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", my: 2 }}>
-                    <Typography>Supporting Images</Typography>
+                    <Typography variant="h6">Supporting Images</Typography>
                     {questions[0].images.map((imageSrc) => (
-                        <img src={imageSrc} width="400px" />
+                        <img src={imageSrc} width="400px" key={imageSrc} />
                     ))}
                 </Box>
+                {/* display answer section */}
+                {answers.length > 0 ? (
+                    <>
+                        <Typography variant="h6">People's answer</Typography>
+                        <Box id="answer-section">
+                            {answers.map((userAnswer) => (
+                                <AnswerItem
+                                    answer={userAnswer}
+                                    key={userAnswer._id}
+                                />
+                            ))}
+                        </Box>
+                    </>
+                ) : null}
                 <Box>
                     <Typography variant="h6">Your Answer</Typography>
                     <MdEditor

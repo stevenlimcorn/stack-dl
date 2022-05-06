@@ -74,7 +74,6 @@ function QuestionItem({ question }) {
                         flexDirection: "column",
                     }}
                 >
-                    <Typography>{question.votes} votes</Typography>
                     <Typography>{question.views} views</Typography>
                 </Box>
             </Box>
@@ -88,7 +87,7 @@ function QuestionItem({ question }) {
             >
                 <UiLink
                     component={Link}
-                    to={`/questions/${question._id}`}
+                    to={`/${question._id}`}
                     style={{ textDecoration: "none", color: "primary" }}
                 >
                     <Typography variant="h6">{question.title}</Typography>

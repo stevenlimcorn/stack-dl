@@ -13,21 +13,6 @@ const createQuestion = async (questionData, token) => {
     return response.data;
 };
 
-// Create new question
-const addAnswerQuestion = async (payload, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-    const id = payload.id;
-    const answerData = payload.answerData;
-    console.log(id, answerData);
-    const response = await axios.put(API_URL + `/${id}`, answerData, config);
-    console.log(response.data);
-    return response.data;
-};
-
 // Get user question question
 const getAllQuestions = async () => {
     const response = await axios.get(API_URL + "all");
@@ -60,7 +45,6 @@ const deleteQuestion = async (questionId, token) => {
 const questionService = {
     createQuestion,
     deleteQuestion,
-    addAnswerQuestion,
     getAllQuestions,
     getQuestionsByUserId,
     getQuestionById,

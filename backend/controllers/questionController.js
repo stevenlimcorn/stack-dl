@@ -46,14 +46,6 @@ const getQuestionById = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$question_user" },
-        {
-            $lookup: {
-                from: "answers",
-                localField: "answers",
-                foreignField: "_id",
-                as: "answer_user",
-            },
-        },
     ]).exec((err, questions) => {
         if (err) {
             res.status(400);
@@ -83,14 +75,6 @@ const getQuestionsByUserId = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$question_user" },
-        {
-            $lookup: {
-                from: "answers",
-                localField: "answers",
-                foreignField: "_id",
-                as: "answer_user",
-            },
-        },
     ]).exec((err, questions) => {
         if (err) {
             res.status(400);
@@ -123,38 +107,6 @@ const setQuestion = asyncHandler(async (req, res) => {
     res.status(200).json(question);
 });
 
-// @desc    Update Question
-// @route   PUT /api/questions/:id
-// @access  Private
-const addAnswerQuestion = asyncHandler(async (req, res) => {
-    // check if question exists
-    const question = await Question.findById(req.params.id);
-    if (!question) {
-        res.status(400);
-        throw new Error("Question not found");
-    }
-    // create answer
-    const { answer, votes } = req.body;
-    if (!answer || votes === null) {
-        res.status(400);
-        throw new Error("Write an answer.");
-    }
-    const createdAnswer = await Answer.create({
-        user: req.user.id,
-        answer: answer,
-        votes: votes,
-    });
-    const updatedQuestion = await Question.findByIdAndUpdate(
-        req.params.id,
-        { $push: { answers: createdAnswer._id } },
-        {
-            new: true,
-            upsert: true,
-        }
-    );
-    res.status(200).json(updatedQuestion);
-});
-
 // @desc    Delete Question
 // @route   DELETE /api/questions/:id
 // @access  Private
@@ -181,7 +133,6 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 
 module.exports = {
     setQuestion,
-    addAnswerQuestion,
     deleteQuestion,
     getAllQuestions,
     getQuestionsByUserId,

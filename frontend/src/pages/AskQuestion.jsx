@@ -59,7 +59,11 @@ function QuestionForm() {
             };
             const promise = file.map(async (file) => {
                 const uploadLink = await axios.get("/api/s3url");
-                await axios.put(uploadLink.data.url, file, config);
+                await axios
+                    .put(uploadLink.data.url, file, config)
+                    .catch((err) => {
+                        throw err;
+                    });
                 const imageUrl = uploadLink.data.url.split("?")[0];
                 return imageUrl;
             });
@@ -71,7 +75,6 @@ function QuestionForm() {
             description,
             tags,
             views: 0,
-            votes: 0,
             images: imageSrc,
         };
         const json = await dispatch(createQuestion(questionData));
@@ -93,7 +96,7 @@ function QuestionForm() {
             });
             setFile([]);
             setSnackbar("");
-            navigate(`/questions/${json.payload._id}`);
+            navigate(`/${json.payload._id.toString()}`);
         }
     };
 

@@ -7,13 +7,21 @@ const answerSchema = mongoose.Schema(
             required: true,
             ref: "User",
         },
-        votes: {
-            type: Number,
-            required: [true, "Please add number of votes"],
-        },
+        likes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                required: false,
+                ref: "User",
+            },
+        ],
         answer: {
-            type: String,
-            required: [true, "Please add an answer"],
+            type: mongoose.Schema.Types.Mixed,
+            required: [true, "Please add answer"],
+        },
+        question: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Question",
         },
     },
     {

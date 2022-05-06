@@ -76,10 +76,7 @@ function App() {
                         path="/questions/ask"
                         element={renderNavbar(<AskQuestion />)}
                     />
-                    <Route
-                        path="/questions/:id"
-                        element={renderNavbar(<Question />)}
-                    />
+                    <Route path="/:id" element={renderNavbar(<Question />)} />
                     <Route path="/404" element={renderNavbar(<ErrorPage />)} />
                 </Routes>
             </Router>

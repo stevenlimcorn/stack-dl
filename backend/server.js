@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 app.use("/api/questions", require("./routes/questionRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
-// app.use("/api/answers/", require("./routes/answerRoute"));
+app.use("/api/answers/", require("./routes/answerRoute"));
 // s3 image upload
 app.get("/api/s3url", async (req, res) => {
     const url = await generateUploadURL();

@@ -15,10 +15,6 @@ const questionSchema = mongoose.Schema(
             type: Number,
             required: [true, "Please add number of views."],
         },
-        votes: {
-            type: Number,
-            required: [true, "Please add number of votes"],
-        },
         tags: {
             type: [String],
             required: [true, "Please add tags"],
@@ -30,11 +26,6 @@ const questionSchema = mongoose.Schema(
         images: {
             type: [String],
             required: false,
-        },
-        answers: {
-            type: [mongoose.Schema.Types.ObjectId],
-            required: false,
-            ref: "Answer",
         },
     },
     {
