@@ -46,6 +46,14 @@ const getQuestionById = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$question_user" },
+        {
+            $lookup: {
+                from: "answers",
+                localField: "answers",
+                foreignField: "_id",
+                as: "answer_user",
+            },
+        },
     ]).exec((err, questions) => {
         if (err) {
             res.status(400);
@@ -75,6 +83,14 @@ const getQuestionsByUserId = asyncHandler(async (req, res) => {
             },
         },
         { $unwind: "$question_user" },
+        {
+            $lookup: {
+                from: "answers",
+                localField: "answers",
+                foreignField: "_id",
+                as: "answer_user",
+            },
+        },
     ]).exec((err, questions) => {
         if (err) {
             res.status(400);
