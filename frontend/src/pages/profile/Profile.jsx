@@ -16,12 +16,10 @@ function Profile({ underline }) {
     // helper functions
     const getStatistics = (questions) => {
         const stats = {
-            Votes: 0,
             Views: 0,
         };
         questions.forEach((question) => {
             stats.Views += question["views"];
-            stats.Votes += question["votes"];
         });
         return stats;
     };
