@@ -86,7 +86,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const activation_token = createToken.activation(user);
 
     // send email const
-    const url = `http://localhost:3000/#/activate/${activation_token}`;
+    const url = `${process.env.CLIENT_URL}/activate/${activation_token}`;
     sendMail.sendEmailRegister(email, url, "Verify Your Email");
     res.status(200).json({ msg: "Welcome, please check your email." });
 });
@@ -166,7 +166,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     }
     const accessToken = createToken.access({ id: user.id });
     // send email
-    const url = `http://localhost:3000/#/resetpassword/${accessToken}`;
+    const url = `${process.env.CLIENT_URL}/resetpassword/${accessToken}`;
     const name = user.userName;
     sendMail.sendEmailReset(email, url, "Reset your password", name);
 
@@ -175,8 +175,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
 const resetPassword = asyncHandler(async (req, res) => {
     const { password } = req.body;
-    console.log(req.body);
-
     // check password less than 6 characters
     if (password.length < 6) {
         res.status(400);
