@@ -137,6 +137,7 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 const updateViews = asyncHandler(async (req, res) => {
     const question = await Question.findById(req.params.id);
     const userId = req.body.id;
+    console.log(req.params.id);
     if (!question) {
         res.status(400);
         throw new Error("Question not found");
@@ -149,6 +150,7 @@ const updateViews = asyncHandler(async (req, res) => {
             upsert: true,
         }
     );
+    console.log(updatedQuestion);
     res.status(200).json({ msg: "updated" });
 });
 

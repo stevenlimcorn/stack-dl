@@ -44,6 +44,7 @@ const deleteQuestion = async (questionId, token) => {
 
 // Delete user question question
 const updateViews = async (questionId, userId) => {
+    console.log(questionId, userId);
     const response = await axios.post(API_URL + questionId, { id: userId });
     return response.data;
 };

@@ -97,18 +97,19 @@ function Question() {
             dispatch(getQuestionById(params.id));
             dispatch(getAnswerByQuestionId(params.id));
         }
-
-        if (user && questions.length > 0 && user !== questions[0].user) {
-            console.log(user);
+        if (user && questions.length > 0 && user._id !== questions[0].user) {
             dispatch(
-                updateViews({ questionId: questions[0]._id, userId: user._id })
+                updateViews({
+                    questionId: params.id,
+                    userId: user._id,
+                })
             );
         }
         return () => {
             dispatch(reset());
             dispatch(answerReset());
         };
-    }, [params, isError]);
+    }, [params, isError, user]);
 
     if (questions.length > 0) {
         return (

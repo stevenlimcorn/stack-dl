@@ -13,6 +13,7 @@ function Bookmark({ questionId }) {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
     const { bookmarks } = useSelector((state) => state.bookmarks);
+    const [firstRender, setFirstRender] = useState(true);
     const handleBookmark = async () => {
         if (user === null) {
             navigate("/login");
@@ -28,16 +29,20 @@ function Bookmark({ questionId }) {
     };
 
     useEffect(() => {
-        const fetchBookmarks = async () => {
-            dispatch(getBookmark(user._id));
-            if (bookmarks && bookmarks[0].bookmark.length > 0) {
+        if (user) {
+            if (firstRender) {
+                dispatch(getBookmark(user._id));
+                setFirstRender(false);
+            }
+            if (
+                bookmarks &&
+                bookmarks.length > 0 &&
+                bookmarks[0].bookmark.length > 0
+            ) {
                 bookmarks[0].bookmark.includes(questionId)
                     ? setColor("#1976d2")
                     : setColor("grey");
             }
-        };
-        if (user && color !== "#1976d2") {
-            fetchBookmarks();
         }
     }, [dispatch, bookmarks]);
     return (
