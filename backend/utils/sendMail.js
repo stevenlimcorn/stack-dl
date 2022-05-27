@@ -172,12 +172,12 @@ const sendEmailReset = (to, url, text, name) => {
               padding: 1em 6em;
               border-radius: 5px;
               border: 0;
-              background-color: hsl(45, 100%, 51%);
+              background-color: #1976d2;
               transition: all 0.3s ease-in;
               cursor: pointer;
             }
             button:hover {
-              background-color: hsl(45, 70%, 51%);
+              background-color: #1976d2;
               transition: all 0.3s ease-in;
             }
             .spacing {

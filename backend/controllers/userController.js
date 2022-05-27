@@ -87,8 +87,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // send email const
     const url = `${process.env.EMAIL_URL}/activate/${activation_token}`;
-    sendMail.sendEmailRegister(email, url, "Verify Your Email");
-    res.status(200).json({ msg: "Welcome, please check your email." });
+    const status = sendMail.sendEmailRegister(email, url, "Verify Your Email");
+    res.status(200).json({ msg: status });
 });
 
 const activateUser = asyncHandler(async (req, res) => {
