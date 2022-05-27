@@ -11,12 +11,8 @@ const protect = asyncHandler(async (req, res, next) => {
         try {
             // Get token from header
             token = req.headers.authorization.split(" ")[1];
-
             // Verify token
-            const decoded = jwt.verify(
-                token,
-                process.env.ACTIVATION_TOKEN_SECRET
-            );
+            const decoded = jwt.verify(token, process.env.ACTIVATION_TOKEN);
 
             // Get user from the token
             req.user = await User.findById(decoded.id).select("-password");
@@ -32,6 +28,28 @@ const protect = asyncHandler(async (req, res, next) => {
     }
 });
 
+const authReset = asyncHandler(async (req, res, next) => {
+    try {
+        const token = req.header("Authorization");
+        if (!token) {
+            res.status(400);
+            throw new Error("Not authorized, no token");
+        }
+        jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+            if (err) {
+                res.status(400);
+                throw new Error({ msg: "Authentication failed" });
+            }
+            req.user = user;
+        });
+        next();
+    } catch (err) {
+        res.status(500);
+        throw new Error(err);
+    }
+});
+
 module.exports = {
     protect,
+    authReset,
 };

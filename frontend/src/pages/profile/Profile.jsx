@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Button, Divider, Typography, Toolbar } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import ColoredAvatar from "../../components/ColoredAvatar";
 import moment from "moment";
 import {
@@ -11,29 +11,34 @@ import {
 import Spinner from "../../components/Spinner";
 import authService from "../../features/auth/authService";
 import { Link } from "react-router-dom";
+import {
+    bookmarkReset,
+    getBookmark,
+} from "../../features/bookmarks/bookmarkSlice";
+import ProfileMenu from "./ProfileMenu";
 
-function Profile({ underline }) {
+function Profile() {
     // helper functions
     const getStatistics = (questions) => {
         const stats = {
             Views: 0,
+            "Total Questions": questions.length,
+            "Total Bookmarks": 0,
         };
         questions.forEach((question) => {
             stats.Views += question["views"];
         });
+        if (bookmarks) {
+            stats["Total Bookmarks"] = bookmarks[0].bookmark.length;
+        }
         return stats;
     };
     // End Helper function
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const params = useParams();
-
-    const sections = [
-        { title: "Home", url: `/user/${params.id}` },
-        { title: "Questions", url: `/user/${params.id}/questions` },
-    ];
-
     const { user } = useSelector((state) => state.auth);
+    const { bookmarks } = useSelector((state) => state.bookmarks);
     const { questions, isLoading } = useSelector((state) => state.questions);
     const [isUser, setIsUser] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
@@ -43,12 +48,14 @@ function Profile({ underline }) {
             setUserProfile(user);
             setIsUser(true);
             dispatch(getQuestionsByUserId(user._id));
+            dispatch(getBookmark(user._id));
         } else if (params.id.match(/^[0-9a-fA-F]{24}$/)) {
             authService
                 .getUser(params.id)
                 .then((user) => {
                     setUserProfile(user);
                     dispatch(getQuestionsByUserId(params.id));
+                    dispatch(getBookmark(params.id));
                 })
                 .catch((err) => {
                     setUserProfile(null);
@@ -58,6 +65,7 @@ function Profile({ underline }) {
         }
         return () => {
             dispatch(reset());
+            dispatch(bookmarkReset());
         };
     }, [navigate, dispatch, params, user]);
 
@@ -165,65 +173,7 @@ function Profile({ underline }) {
                         </Box>
                     </Box>
                 </Box>
-                <Box
-                    sx={{
-                        width: "100%",
-                        display: "flex",
-                        alignContent: "center",
-                        borderBottom: "1px solid rgb(218, 220, 224)",
-                        backgroundColor: "white",
-                    }}
-                >
-                    <Toolbar
-                        component="nav"
-                        variant="dense"
-                        sx={{
-                            justifyContent: "space-between",
-                            overflowX: "auto",
-                            height: "40px!important",
-                        }}
-                    >
-                        {sections.map((section) => {
-                            return underline ? (
-                                <Link
-                                    color="inherit"
-                                    noWrap
-                                    key={section.title}
-                                    variant="body2"
-                                    to={section.url}
-                                    sx={{
-                                        lineHeight: "46px",
-                                        textDecoration: "none",
-                                        "&:hover": {
-                                            color: "#1976d2",
-                                            borderBottom: "2px solid #1976d2",
-                                        },
-                                        mr: 2,
-                                    }}
-                                >
-                                    {section.title}
-                                </Link>
-                            ) : (
-                                <Link
-                                    color="inherit"
-                                    noWrap
-                                    key={section.title}
-                                    variant="body2"
-                                    to={section.url}
-                                    sx={{
-                                        lineHeight: "46px",
-                                        textDecoration: "none",
-                                        color: "#1976d2",
-                                        borderBottom: "2px solid #1976d2",
-                                        mr: 2,
-                                    }}
-                                >
-                                    {section.title}
-                                </Link>
-                            );
-                        })}
-                    </Toolbar>
-                </Box>
+                <ProfileMenu statistics={infoGraphics} />
             </>
         );
     } else {

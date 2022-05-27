@@ -14,8 +14,21 @@ function Home() {
         (state) => state.questions
     );
 
+    function storeScrollPosition() {
+        sessionStorage.setItem("homepageScrollPosition", window.pageYOffset);
+    }
+
     // asynchronous function (render function)
     useEffect(() => {
+        setTimeout(() => {
+            if (sessionStorage.getItem("homepageScrollPosition")) {
+                const scrollPosition = sessionStorage.getItem(
+                    "homepageScrollPosition"
+                );
+                window.scrollTo(0, parseInt(scrollPosition));
+                sessionStorage.removeItem("homepageScrollPosition");
+            }
+        }, 200);
         dispatch(getAllQuestions());
         return () => {
             dispatch(reset());
@@ -23,7 +36,7 @@ function Home() {
     }, [navigate, isError, message, dispatch]);
 
     return (
-        <>
+        <div id="homepage">
             {isLoading ? <Spinner isLoading={isLoading} /> : null}
             <Box
                 sx={{
@@ -44,10 +57,11 @@ function Home() {
                 </Button>
             </Box>
             <section className="content">
-                {questions.length > 0 ? (
+                {questions && questions.length > 0 ? (
                     <div className="questions">
                         {questions.map((question) => (
                             <QuestionItem
+                                storeScrollPosition={storeScrollPosition}
                                 key={question._id}
                                 question={question}
                             />
@@ -57,7 +71,7 @@ function Home() {
                     <h3>You have not created any questions.</h3>
                 )}
             </section>
-        </>
+        </div>
     );
 }
 

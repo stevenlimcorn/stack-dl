@@ -2,33 +2,29 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
+const sendMail = require("../utils/sendMail");
 
 // HELPER FUNCTIONS FOR GENERATING TOKENS
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public
 const generateJWT = (id) => {
-    return jwt.sign({ id }, process.env.ACTIVATION_TOKEN_SECRET, {
+    return jwt.sign({ id }, process.env.ACTIVATION_TOKEN, {
         expiresIn: "30d",
     });
 };
 
-const createActivationToken = (payload) => {
-    return jwt.sign(payload, process.env.ACTIVATION_TOKEN_SECRET, {
-        expiresIn: "5m",
-    });
-};
-
-const createAccessToken = (payload) => {
-    return jwt.sign(payload, process.env.ACTIVATION_TOKEN_SECRET, {
-        expiresIn: "15m",
-    });
-};
-
-const createRefreshToken = (payload) => {
-    return jwt.sign(payload, process.env.ACTIVATION_TOKEN_SECRET, {
-        expiresIn: "7d",
-    });
+const createToken = {
+    activation: (payload) => {
+        return jwt.sign(payload, process.env.ACTIVATION_TOKEN, {
+            expiresIn: "5m",
+        });
+    },
+    access: (payload) => {
+        return jwt.sign(payload, process.env.ACCESS_TOKEN, {
+            expiresIn: "15m",
+        });
+    },
 };
 
 // @desc    Validate Email
@@ -42,6 +38,7 @@ const validateEmail = (email) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
+    // get info
     const { firstName, lastName, userName, email, password } = req.body;
     // check if entry is not empty
     if (!firstName || !lastName || !email || !password || !userName) {
@@ -77,42 +74,48 @@ const registerUser = asyncHandler(async (req, res) => {
     // hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // const newUser = {
-    //     firstName,
-    //     lastName,
-    //     email,
-    //     password: hashedPassword,
-    // };
-    // const activation_token = createActivationToken(newUser);
-    // const url = `${process.env.CLIENT_URL}/user/activate/${activation_token}`;
-    // sendMail(email, url);
 
-    // create user
-    const user = await User.create({
+    const user = {
         firstName,
         lastName,
         userName,
         email,
         password: hashedPassword,
-    });
+    };
 
-    if (!user) {
+    const activation_token = createToken.activation(user);
+
+    // send email const
+    const url = `http://localhost:3000/#/activate/${activation_token}`;
+    sendMail.sendEmailRegister(email, url, "Verify Your Email");
+    res.status(200).json({ msg: "Welcome, please check your email." });
+});
+
+const activateUser = asyncHandler(async (req, res) => {
+    // get token
+    const { activation_token } = req.body;
+    // verify token
+    const user = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN);
+    const { firstName, lastName, userName, email, password } = user;
+    // check user
+    const check = await User.findOne({ email });
+    if (check) {
+        res.status(400);
+        throw new Error("This email already existed.");
+    }
+    const newUser = await User.create({
+        firstName,
+        lastName,
+        userName,
+        email,
+        password,
+    });
+    if (!newUser) {
         res.status(400);
         throw new Error("invalid user data");
     } else {
-        // res.cookie("token", token, {
-        //     expires: new Date(Date.now() + 20 * 3600),
-        //     httpOnly: true,
-        //     secure: true,
-        // });
-        res.status(201).json({
-            _id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            userName: user.userName,
-            email: user.email,
-            token: generateJWT(user._id),
-            createdAt: user.createdAt,
+        res.status(200).json({
+            msg: "Registration successful, please login.",
         });
     }
 });
@@ -125,7 +128,6 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-        // const token = remember ? generateJWT(user._id) : null;
         const userData = {
             _id: user.id,
             firstName: user.firstName,
@@ -150,14 +152,46 @@ const loginUser = asyncHandler(async (req, res) => {
 // @desc    Handle user login authentication
 // @route   POST /api/users/login
 // @access  Public
-const forgottenPassword = asyncHandler(async (req, res) => {
+const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
+    // validate email
+    if (!validateEmail(email)) {
+        res.status(400);
+        throw new Error("Please enter a proper email");
+    }
     const user = await User.findOne({ email });
     if (!user) {
         res.status(400);
-        throw new Error("Invalid Username and Password.");
+        throw new Error("Email not registered in system.");
     }
-    const ac_token = crea;
+    const accessToken = createToken.access({ id: user.id });
+    // send email
+    const url = `http://localhost:3000/#/resetpassword/${accessToken}`;
+    const name = user.userName;
+    sendMail.sendEmailReset(email, url, "Reset your password", name);
+
+    res.status(200).json({ msg: "Re-send the password, check your email." });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    console.log(req.body);
+
+    // check password less than 6 characters
+    if (password.length < 6) {
+        res.status(400);
+        throw new Error("Password length must be at least 6 characters.");
+    }
+
+    // hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    // update password
+    await User.findOneAndUpdate(
+        { _id: req.user.id },
+        { password: hashedPassword }
+    );
+    res.status(200).json({ msg: "Password was updated successfully." });
 });
 
 // @desc    Get user data
@@ -241,4 +275,7 @@ module.exports = {
     logout,
     getUser,
     updateUser,
+    activateUser,
+    forgotPassword,
+    resetPassword,
 };

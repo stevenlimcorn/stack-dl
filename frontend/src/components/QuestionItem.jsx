@@ -2,8 +2,9 @@ import moment from "moment";
 import { Box, Typography, Link as UiLink } from "@mui/material";
 import ColoredAvatar from "./ColoredAvatar";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
-function QuestionItem({ question }) {
+function QuestionItem({ question, storeScrollPosition }) {
     return (
         <Box
             sx={{
@@ -47,6 +48,7 @@ function QuestionItem({ question }) {
                         }}
                     >
                         <Link
+                            onClick={storeScrollPosition}
                             to={`/user/${question.question_user._id}`}
                             style={{
                                 textDecoration: "None",
@@ -86,6 +88,7 @@ function QuestionItem({ question }) {
                 }}
             >
                 <UiLink
+                    onClick={storeScrollPosition}
                     component={Link}
                     to={`/${question._id}`}
                     style={{ textDecoration: "none", color: "primary" }}

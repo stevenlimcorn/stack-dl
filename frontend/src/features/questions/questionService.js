@@ -27,7 +27,7 @@ const getQuestionsByUserId = async (id) => {
 
 // Get user question question
 const getQuestionById = async (id) => {
-    const response = await axios.get(API_URL + `/${id}`);
+    const response = await axios.get(API_URL + `${id}`);
     return response.data;
 };
 

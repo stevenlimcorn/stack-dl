@@ -20,6 +20,7 @@ import {
     getAnswerByQuestionId,
 } from "../features/answers/answerSlice";
 import AnswerItem from "../components/AnswerItem";
+import Bookmark from "../components/Bookmark";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 function Question() {
@@ -96,10 +97,10 @@ function Question() {
             dispatch(getQuestionById(params.id));
             dispatch(getAnswerByQuestionId(params.id));
         }
-        return () => {
-            dispatch(reset());
-            dispatch(answerReset());
-        };
+        // return () => {
+        //     dispatch(reset());
+        //     dispatch(answerReset());
+        // };
     }, [params, isError]);
 
     if (questions.length > 0) {
@@ -135,35 +136,34 @@ function Question() {
                             </Typography>
                         </Box>
                     </Box>
-                    {/* <Box
+                    <Box
                         sx={{
                             display: "flex",
                             flexDirection: "column",
-                            alignItems: "center",
+                            textAlign: "right",
+                            alignItems: "self-end",
                         }}
                     >
-                        <Link
-                            to={`/user/${questions[0].question_user._id}`}
-                            style={{ textDecoration: "none" }}
-                        >
-                            <ColoredAvatar
-                                name={`${questions[0].question_user.firstName} ${questions[0].question_user.lastName}`}
-                            />
-                        </Link>
-                        <Link
-                            to={`/user/${questions[0].question_user._id}`}
-                            style={{
-                                textDecoration: "None",
-                                "&:hover": {
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            <Typography color="primary">
-                                {questions[0].question_user.userName}
-                            </Typography>
-                        </Link>
-                    </Box> */}
+                        {questions[0].question_user ? (
+                            <>
+                                <Typography>Question asked by</Typography>
+                                <Link
+                                    to={`/user/${questions[0].question_user._id}`}
+                                    style={{
+                                        textDecoration: "None",
+                                        "&:hover": {
+                                            textDecoration: "underline",
+                                        },
+                                    }}
+                                >
+                                    <Typography color="primary">
+                                        {questions[0].question_user.userName}
+                                    </Typography>
+                                </Link>
+                                <Bookmark questionId={questions[0]._id} />
+                            </>
+                        ) : null}
+                    </Box>
                 </Box>
                 <Divider />
                 <Box sx={{ my: 2 }}>
@@ -175,12 +175,16 @@ function Question() {
                         </Typography>
                     </Box>
                 </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", my: 2 }}>
-                    <Typography variant="h6">Supporting Images</Typography>
-                    {questions[0].images.map((imageSrc) => (
-                        <img src={imageSrc} width="400px" key={imageSrc} />
-                    ))}
-                </Box>
+                {questions[0].images.length > 0 && (
+                    <Box
+                        sx={{ display: "flex", flexDirection: "column", my: 2 }}
+                    >
+                        <Typography variant="h6">Supporting Images</Typography>
+                        {questions[0].images.map((imageSrc) => (
+                            <img src={imageSrc} width="400px" key={imageSrc} />
+                        ))}
+                    </Box>
+                )}
                 {/* display answer section */}
                 {answers.length > 0 ? (
                     <>

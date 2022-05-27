@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch } from "react-redux";
-import { authReset, forgotPassword } from "../features/auth/authSlice";
+import { authReset, resetPassword } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
 import AlertMessage from "../components/AlertMessage";
+import PasswordStrengthBar from "react-password-strength-bar";
 import {
     Container,
     CssBaseline,
@@ -13,34 +13,55 @@ import {
     Button,
     TextField,
 } from "@mui/material";
+import { useParams } from "react-router-dom";
 
-function ForgotPassword() {
+function Reset() {
     // states redux
     const dispatch = useDispatch();
-    const { user, isLoading, isError, isSuccess, message } = useSelector(
+    const { isLoading, isError, isSuccess, message } = useSelector(
         (state) => state.auth
     );
     // alerts for incorrect forms
     const [snackbar, setSnackbar] = useState("");
-    const [email, setEmail] = useState("");
+    const [formData, setFormData] = useState({
+        password: "",
+        confirmPassword: "",
+    });
+    const { password, confirmPassword } = formData;
+    const { token } = useParams();
+    // password strength
+    const [strength, setStrength] = useState(0);
 
     // Functions
     const handleSubmit = (event) => {
         event.preventDefault();
-
-        if (email === "") {
+        if (password !== confirmPassword) {
+            // create error alert
             setSnackbar({
-                msg: "Please fill in the email.",
+                msg: "First password and confirm password mismatch.",
                 key: Math.random(),
                 severity: "error",
             });
+        } else if (strength < 3) {
+            setSnackbar({
+                msg: "Password too weak!",
+                key: Math.random(),
+                severity: "error",
+            });
+        } else {
+            dispatch(resetPassword({ password: password, token: token }));
+            setFormData({
+                password: "",
+                confirmPassword: "",
+            });
         }
-        dispatch(forgotPassword({ email: email }));
-        setEmail("");
     };
 
     const onChange = (e) => {
-        setEmail(e.target.value);
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }));
     };
 
     useEffect(() => {
@@ -80,7 +101,7 @@ function ForgotPassword() {
                     variant="h5"
                     sx={{ textAlign: "center" }}
                 >
-                    Forgot Password
+                    Password Reset
                 </Typography>
                 <Box
                     component="form"
@@ -93,12 +114,34 @@ function ForgotPassword() {
                             <TextField
                                 required
                                 fullWidth
-                                id="email"
-                                label="Enter your email address"
-                                value={email}
+                                name="password"
+                                label="Password"
+                                type="password"
                                 onChange={onChange}
-                                name="email"
-                                autoComplete="email"
+                                value={password}
+                                id="password"
+                                autoComplete="new-password"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                fullWidth
+                                name="confirmPassword"
+                                label="Confirm Password"
+                                type="password"
+                                onChange={onChange}
+                                value={confirmPassword}
+                                id="confirmPassword"
+                                autoComplete="confirm pasword"
+                            />
+                            <PasswordStrengthBar
+                                password={password}
+                                minLength={6}
+                                onChangeScore={(score, feedback) => {
+                                    console.log(score);
+                                    setStrength(score);
+                                }}
                             />
                         </Grid>
                     </Grid>
@@ -108,15 +151,8 @@ function ForgotPassword() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Submit
+                        Reset
                     </Button>
-                    <Grid container justifyContent="flex-end">
-                        <Grid item>
-                            <Link href="/" variant="body2">
-                                {"< Go back to home page"}
-                            </Link>
-                        </Grid>
-                    </Grid>
                 </Box>
                 {snackbar ? (
                     <AlertMessage
@@ -130,4 +166,4 @@ function ForgotPassword() {
     );
 }
 
-export default ForgotPassword;
+export default Reset;

@@ -1,7 +1,6 @@
 import React from "react";
 import { styled, alpha } from "@mui/material/styles";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import HomeIcon from "@mui/icons-material/Home";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -15,7 +14,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
-import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import Button from "@mui/material/Button";
 import PropTypes from "prop-types";
@@ -24,6 +22,7 @@ import { logout, authReset } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import ColoredAvatar from "../ColoredAvatar";
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 function Navbar({ drawerWidth }) {
     // states
@@ -42,55 +41,23 @@ function Navbar({ drawerWidth }) {
         setMobileOpen(!mobileOpen);
     };
 
-    // Search bar styles
-    const Search = styled("div")(({ theme }) => ({
-        position: "relative",
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: alpha(theme.palette.common.white, 0.15),
-        "&:hover": {
-            backgroundColor: alpha(theme.palette.common.white, 0.25),
-        },
-        marginRight: theme.spacing(1),
-        marginLeft: 0,
-        width: "100%",
-        [theme.breakpoints.up("md")]: {
-            marginLeft: theme.spacing(1),
-        },
-    }));
-
-    const SearchIconWrapper = styled("div")(({ theme }) => ({
-        padding: theme.spacing(0, 2),
-        height: "100%",
-        position: "absolute",
-        pointerEvents: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-    }));
-
-    const StyledInputBase = styled(InputBase)(({ theme }) => ({
-        color: "inherit",
-        "& .MuiInputBase-input": {
-            padding: theme.spacing(1, 1, 1, 0),
-            // vertical padding + font size from searchIcon
-            paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-            transition: theme.transitions.create("width"),
-            width: "100%",
-            [theme.breakpoints.up("md")]: {
-                width: "20ch",
-            },
-        },
-    }));
-
     const menuItems = [
-        { label: "Home", path: "/", icon: <HomeIcon /> },
-        { label: "Questions", path: "/accounts", icon: <QuestionAnswerIcon /> },
-        { label: "Tags", path: "/organizations", icon: <LocalOfferIcon /> },
+        { label: "Home", path: "/", icon: <HomeIcon color="primary" /> },
+        {
+            label: "Bookmarks",
+            path: "/bookmarks",
+            icon: <BookmarkIcon color="primary" />,
+        },
     ];
 
     const drawer = (
         <div>
-            <Toolbar />
+            <Toolbar sx={{ display: "flex" }}>
+                <img src="/logo.png" alt="logo" width="35px" />
+                <Typography sx={{ paddingLeft: "10px", fontSize: "16pt" }}>
+                    Stack <span style={{ color: "#1976d2" }}>DL</span>
+                </Typography>
+            </Toolbar>
             <Divider />
             <List>
                 {menuItems.map(({ label, icon, path }) => {
@@ -115,7 +82,12 @@ function Navbar({ drawerWidth }) {
                     ml: { md: `${drawerWidth}px` },
                 }}
             >
-                <Toolbar>
+                <Toolbar
+                    sx={{
+                        display: "flex",
+                        justifyContent: { xs: "space-between", md: "flex-end" },
+                    }}
+                >
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -125,17 +97,8 @@ function Navbar({ drawerWidth }) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search"
-                            inputProps={{ "aria-label": "search" }}
-                        />
-                    </Search>
                     {user ? (
-                        <>
+                        <div>
                             <Button
                                 sx={{ mx: 1 }}
                                 onClick={onLogout}
@@ -148,9 +111,9 @@ function Navbar({ drawerWidth }) {
                                     name={`${user.firstName} ${user.lastName}`}
                                 />
                             </Button>
-                        </>
+                        </div>
                     ) : (
-                        <>
+                        <div>
                             <Button
                                 component={Link}
                                 sx={{ mx: 1 }}
@@ -167,7 +130,7 @@ function Navbar({ drawerWidth }) {
                             >
                                 Register
                             </Button>
-                        </>
+                        </div>
                     )}
                 </Toolbar>
             </AppBar>

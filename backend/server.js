@@ -12,13 +12,14 @@ connectDB();
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 app.use("/api/questions", require("./routes/questionRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/answers/", require("./routes/answerRoute"));
+app.use("/api/bookmarks/", require("./routes/bookmarkRoute"));
+
 // s3 image upload
 app.get("/api/s3url", async (req, res) => {
     const url = await generateUploadURL();

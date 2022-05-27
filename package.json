@@ -1,33 +1,33 @@
 {
-  "name": "stack-dl",
-  "version": "1.0.0",
-  "description": "online discussion",
-  "main": "server.js",
-  "scripts": {
-    "start": "node backend/server.js",
-    "server": "nodemon backend/server.js",
-    "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "aws-sdk": "^2.1127.0",
-    "bcrypt": "^5.0.1",
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^15.0.0",
-    "express": "^4.17.2",
-    "express-async-handler": "^1.2.0",
-    "googleapis": "^100.0.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.1.9",
-    "nodemailer": "^6.7.3"
-  },
-  "devDependencies": {
-    "concurrently": "^7.1.0",
-    "nodemon": "^2.0.15"
-  }
+    "name": "stack-dl",
+    "version": "1.0.0",
+    "description": "online discussion",
+    "main": "server.js",
+    "scripts": {
+        "start": "node backend/server.js",
+        "server": "nodemon backend/server.js --ignore client",
+        "client": "npm start --prefix frontend",
+        "dev": "concurrently \"npm run server\" \"npm run client\""
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "aws-sdk": "^2.1127.0",
+        "bcrypt": "^5.0.1",
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "crypto": "^1.0.1",
+        "dotenv": "^15.0.0",
+        "express": "^4.17.2",
+        "express-async-handler": "^1.2.0",
+        "googleapis": "^100.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^6.1.9",
+        "nodemailer": "^6.7.3"
+    },
+    "devDependencies": {
+        "concurrently": "^7.1.0",
+        "nodemon": "^2.0.15"
+    }
 }

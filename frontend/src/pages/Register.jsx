@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import Toolbar from "@mui/material/Toolbar";
 import { register, authReset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
 import {
@@ -36,7 +35,6 @@ function Register() {
         formData;
 
     // states redux
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, isLoading, isError, isSuccess, message } = useSelector(
         (state) => state.auth
@@ -50,12 +48,16 @@ function Register() {
                 severity: "error",
             });
         }
-        if (isSuccess || user) {
-            navigate("/");
+        if (isSuccess) {
+            setSnackbar({
+                msg: message,
+                key: Math.random(),
+                severity: "success",
+            });
         }
 
         dispatch(authReset());
-    }, [user, isError, isSuccess, message, navigate, dispatch]);
+    }, [user, isError, isSuccess, message, dispatch]);
 
     // updates state variables for form data changes
     const onChange = (e) => {
@@ -68,7 +70,6 @@ function Register() {
     // submit form
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(strength);
 
         if (password !== confirmPassword) {
             // create error alert
@@ -107,12 +108,6 @@ function Register() {
                     alignItems: "center",
                 }}
             >
-                <Toolbar>
-                    <img
-                        src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AStack_Overflow_logo.svg&psig=AOvVaw0BSZvC_kk2fxo6sEmq8jpx&ust=1649602052656000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCMDk09Wch_cCFQAAAAAdAAAAABAD"
-                        alt="logo"
-                    />
-                </Toolbar>
                 <Typography
                     component="h1"
                     variant="h5"

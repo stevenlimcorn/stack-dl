@@ -9,7 +9,6 @@ const createAnswer = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Write an answer.");
     }
-    console.log(questionId);
     const createdAnswer = await Answer.create({
         user: req.user.id,
         answer: answer,
@@ -45,6 +44,8 @@ const getAnswerByQuestionId = asyncHandler(async (req, res) => {
     });
 });
 
+// get answers by user id
+
 const like = asyncHandler(async (req, res) => {
     const answerId = req.params.id;
     const answer = Answer.findById(answerId);
@@ -55,7 +56,6 @@ const like = asyncHandler(async (req, res) => {
     }
     // dislike
     let updatedAnswer = null;
-    console.log(answerId);
     if (like == -1) {
         updatedAnswer = await Answer.findByIdAndUpdate(
             req.params.id,
@@ -68,15 +68,13 @@ const like = asyncHandler(async (req, res) => {
     } else {
         updatedAnswer = await Answer.findByIdAndUpdate(
             req.params.id,
-            { $push: { likes: req.user.id } },
+            { $addToSet: { likes: req.user.id } },
             {
                 new: true,
                 upsert: true,
             }
         );
     }
-    console.log(updatedAnswer);
-    // like
     res.status(200).json(updatedAnswer);
 });
 

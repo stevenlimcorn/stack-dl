@@ -14,9 +14,15 @@ const login = async (userData) => {
 // reigster user
 const register = async (userData) => {
     const response = await axios.post(API_URL, userData);
-    if (response.data) {
-        sessionStorage.setItem("token", JSON.stringify(response.data));
-    }
+    return response.data;
+};
+
+// activate  user
+const activate = async (token) => {
+    const activation_token = {
+        activation_token: token,
+    };
+    const response = await axios.post(API_URL + "activation", activation_token);
     return response.data;
 };
 
@@ -41,10 +47,19 @@ const logout = async () => {
 };
 
 // request password reset
-const forgotPassword = async (userData) => {
+const forgotPassword = async (email) => {
+    const response = await axios.post(API_URL + "forgot_password", email);
+    return response.data;
+};
+
+// request password reset
+const resetPassword = async (password, token) => {
     const response = await axios.post(
-        API_URL + "requestPasswordReset",
-        userData
+        API_URL + "reset_password",
+        { password: password },
+        {
+            headers: { Authorization: token },
+        }
     );
     return response.data;
 };
@@ -56,6 +71,8 @@ const authService = {
     forgotPassword,
     getUser,
     updateUser,
+    activate,
+    resetPassword,
 };
 
 export default authService;

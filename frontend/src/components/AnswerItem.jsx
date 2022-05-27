@@ -24,19 +24,19 @@ function AnswerItem({ answer }) {
     const dispatch = useDispatch();
     const params = useParams();
     const { user } = useSelector((state) => state.auth);
-    const handleLike = () => {
+    const handleLike = async () => {
         if (color == "white") {
             // like
             setColor("red");
-            dispatch(like({ id: answer._id, value: 1 }));
+            await dispatch(like({ id: answer._id, value: 1 }));
         } else {
             setColor("white");
-            dispatch(like({ id: answer._id, value: -1 }));
+            await dispatch(like({ id: answer._id, value: -1 }));
         }
-        dispatch(getAnswerByQuestionId(params.id));
+        await dispatch(getAnswerByQuestionId(params.id));
     };
     useEffect(() => {
-        if (answer.likes.indexOf(user._id) !== -1) {
+        if (user && answer.likes.indexOf(user._id) !== -1) {
             setColor("red");
         }
         return () => {
