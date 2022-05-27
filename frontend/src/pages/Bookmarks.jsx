@@ -23,6 +23,9 @@ function Bookmarks() {
     }
 
     useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
         setTimeout(() => {
             if (sessionStorage.getItem("bookmarkScrollPosition")) {
                 const scrollPosition = sessionStorage.getItem(
@@ -38,11 +41,6 @@ function Bookmarks() {
         if (!bookmarks) {
             fetchBookmarks();
         }
-
-        if (!user) {
-            navigate("/login");
-        }
-
         return () => {
             dispatch(bookmarkReset());
             dispatch(authReset());

@@ -86,7 +86,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const activation_token = createToken.activation(user);
 
     // send email const
-    const url = `${process.env.CLIENT_URL}/activate/${activation_token}`;
+    const url = `${process.env.EMAIL_URL}/activate/${activation_token}`;
     sendMail.sendEmailRegister(email, url, "Verify Your Email");
     res.status(200).json({ msg: "Welcome, please check your email." });
 });
@@ -166,7 +166,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     }
     const accessToken = createToken.access({ id: user.id });
     // send email
-    const url = `${process.env.CLIENT_URL}/resetpassword/${accessToken}`;
+    const url = `${process.env.EMAIL_URL}/resetpassword/${accessToken}`;
     const name = user.userName;
     sendMail.sendEmailReset(email, url, "Reset your password", name);
 
