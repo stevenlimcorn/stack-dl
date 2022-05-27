@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
     reset,
     getQuestionById,
+    updateViews,
     // addAnswerQuestion,
 } from "../features/questions/questionSlice";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,7 +12,6 @@ import moment from "moment";
 import ReactHtmlParser from "react-html-parser";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
-import ColoredAvatar from "../components/ColoredAvatar";
 import { Link } from "react-router-dom";
 import AlertMessage from "../components/AlertMessage";
 import {
@@ -97,10 +97,17 @@ function Question() {
             dispatch(getQuestionById(params.id));
             dispatch(getAnswerByQuestionId(params.id));
         }
-        // return () => {
-        //     dispatch(reset());
-        //     dispatch(answerReset());
-        // };
+
+        if (user && questions.length > 0 && user !== questions[0].user) {
+            console.log(user);
+            dispatch(
+                updateViews({ questionId: questions[0]._id, userId: user._id })
+            );
+        }
+        return () => {
+            dispatch(reset());
+            dispatch(answerReset());
+        };
     }, [params, isError]);
 
     if (questions.length > 0) {
@@ -132,7 +139,7 @@ function Question() {
                                 ).fromNow()}`}
                             </Typography>
                             <Typography color="rgba(0, 0, 0, 0.7)">
-                                {`Viewed ${questions[0].views} times`}
+                                {`Viewed by ${questions[0].views.length} people`}
                             </Typography>
                         </Box>
                     </Box>

@@ -99,6 +99,25 @@ export const deleteQuestion = createAsyncThunk(
     }
 );
 
+export const updateViews = createAsyncThunk(
+    "questions/updateViews",
+    async (payload, thunkAPI) => {
+        try {
+            const questionId = payload.questionId;
+            const userId = payload.userId;
+            return await questionService.updateViews(questionId, userId);
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const questionSlice = createSlice({
     name: "question",
     initialState,
@@ -170,6 +189,19 @@ export const questionSlice = createSlice({
                 );
             })
             .addCase(deleteQuestion.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(updateViews.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateViews.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = action.payload.msg;
+            })
+            .addCase(updateViews.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

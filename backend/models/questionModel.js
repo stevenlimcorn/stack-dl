@@ -11,10 +11,13 @@ const questionSchema = mongoose.Schema(
             type: String,
             required: [true, "Please add a title value"],
         },
-        views: {
-            type: Number,
-            required: [true, "Please add number of views."],
-        },
+        views: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                required: false,
+                ref: "User",
+            },
+        ],
         tags: {
             type: [String],
             required: [true, "Please add tags"],

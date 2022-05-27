@@ -74,7 +74,7 @@ function QuestionForm() {
             title,
             description,
             tags,
-            views: 0,
+            views: [],
             images: imageSrc,
         };
         const json = await dispatch(createQuestion(questionData));

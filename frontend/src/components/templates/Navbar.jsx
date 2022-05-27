@@ -45,7 +45,7 @@ function Navbar({ drawerWidth }) {
         { label: "Home", path: "/", icon: <HomeIcon color="primary" /> },
         {
             label: "Bookmarks",
-            path: "/bookmarks",
+            path: user ? "/bookmarks" : "/login",
             icon: <BookmarkIcon color="primary" />,
         },
     ];

@@ -26,7 +26,7 @@ function Profile() {
             "Total Bookmarks": 0,
         };
         questions.forEach((question) => {
-            stats.Views += question["views"];
+            stats.Views += question["views"].length;
         });
         if (bookmarks && bookmarks.length > 0) {
             stats["Total Bookmarks"] = bookmarks[0].bookmark.length;

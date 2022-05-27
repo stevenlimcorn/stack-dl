@@ -8,7 +8,9 @@ import { authReset } from "../features/auth/authSlice";
 import {
     getBookmark,
     bookmarkReset,
+    bookmarkQuestion,
 } from "../features/bookmarks/bookmarkSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Bookmarks() {
     const dispatch = useDispatch();
@@ -38,9 +40,7 @@ function Bookmarks() {
         function fetchBookmarks() {
             dispatch(getBookmark(user._id));
         }
-        if (!bookmarks) {
-            fetchBookmarks();
-        }
+        fetchBookmarks();
         return () => {
             dispatch(bookmarkReset());
             dispatch(authReset());
@@ -59,20 +59,42 @@ function Bookmarks() {
                             {bookmarks[0].bookmark_question &&
                                 bookmarks[0].bookmark_question.map(
                                     (question, i) => (
-                                        <QuestionItem
-                                            storeScrollPosition={
-                                                storeScrollPosition
-                                            }
-                                            key={question._id}
-                                            question={{
-                                                ...question,
-                                                ...{
-                                                    question_user:
-                                                        bookmarks[0]
-                                                            .question_user[i],
-                                                },
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                alignItems: "center",
                                             }}
-                                        />
+                                            key={question._id}
+                                        >
+                                            <QuestionItem
+                                                storeScrollPosition={
+                                                    storeScrollPosition
+                                                }
+                                                question={{
+                                                    ...question,
+                                                    ...{
+                                                        question_user:
+                                                            bookmarks[0]
+                                                                .question_user[
+                                                                i
+                                                            ],
+                                                    },
+                                                }}
+                                            />
+                                            <DeleteIcon
+                                                sx={{ cursor: "pointer" }}
+                                                onClick={() =>
+                                                    dispatch(
+                                                        bookmarkQuestion({
+                                                            questionId:
+                                                                question._id,
+                                                            value: -1,
+                                                        })
+                                                    )
+                                                }
+                                            />
+                                        </Box>
                                     )
                                 )}
                         </div>

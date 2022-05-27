@@ -131,10 +131,32 @@ const deleteQuestion = asyncHandler(async (req, res) => {
     res.status(200).json({ id: req.params.id });
 });
 
+// @desc    Update views
+// @route   DELETE /api/questions/:id
+// @access  Private
+const updateViews = asyncHandler(async (req, res) => {
+    const question = await Question.findById(req.params.id);
+    const userId = req.body.id;
+    if (!question) {
+        res.status(400);
+        throw new Error("Question not found");
+    }
+    updatedQuestion = await Question.findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { views: userId } },
+        {
+            new: true,
+            upsert: true,
+        }
+    );
+    res.status(200).json({ msg: "updated" });
+});
+
 module.exports = {
     setQuestion,
     deleteQuestion,
     getAllQuestions,
     getQuestionsByUserId,
     getQuestionById,
+    updateViews,
 };

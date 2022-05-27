@@ -42,12 +42,19 @@ const deleteQuestion = async (questionId, token) => {
     return response.data;
 };
 
+// Delete user question question
+const updateViews = async (questionId, userId) => {
+    const response = await axios.post(API_URL + questionId, { id: userId });
+    return response.data;
+};
+
 const questionService = {
     createQuestion,
     deleteQuestion,
     getAllQuestions,
     getQuestionsByUserId,
     getQuestionById,
+    updateViews,
 };
 
 export default questionService;

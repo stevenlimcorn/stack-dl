@@ -2,7 +2,6 @@ import moment from "moment";
 import { Box, Typography, Link as UiLink } from "@mui/material";
 import ColoredAvatar from "./ColoredAvatar";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 
 function QuestionItem({ question, storeScrollPosition }) {
     return (
@@ -76,7 +75,7 @@ function QuestionItem({ question, storeScrollPosition }) {
                         flexDirection: "column",
                     }}
                 >
-                    <Typography>{question.views} views</Typography>
+                    <Typography>{question.views.length} views</Typography>
                 </Box>
             </Box>
             {/* Question content */}
