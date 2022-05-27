@@ -52,7 +52,9 @@ function Bookmarks() {
             <h3>Bookmarks</h3>
             <Box>
                 <section className="content">
-                    {bookmarks && bookmarks[0].bookmark_question.length > 0 ? (
+                    {bookmarks &&
+                    bookmarks.length > 0 &&
+                    bookmarks[0].bookmark_question.length > 0 ? (
                         <div>
                             {bookmarks[0].bookmark_question &&
                                 bookmarks[0].bookmark_question.map(

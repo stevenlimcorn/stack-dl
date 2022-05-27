@@ -30,7 +30,11 @@ function Bookmark({ questionId }) {
     useEffect(() => {
         const fetchBookmarks = async () => {
             dispatch(getBookmark(user._id));
-            if (bookmarks && bookmarks[0].bookmark.length > 0) {
+            if (
+                bookmarks &&
+                bookmarks.length > 0 &&
+                bookmarks[0].bookmark.length > 0
+            ) {
                 bookmarks[0].bookmark.includes(questionId)
                     ? setColor("#1976d2")
                     : setColor("grey");

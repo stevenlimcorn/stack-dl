@@ -52,7 +52,10 @@ function Navbar({ drawerWidth }) {
 
     const drawer = (
         <div>
-            <Toolbar sx={{ display: "flex" }}>
+            <Toolbar
+                onClick={() => navigate("/")}
+                sx={{ display: "flex", cursor: "pointer" }}
+            >
                 <img src="/logo.png" alt="logo" width="35px" />
                 <Typography sx={{ paddingLeft: "10px", fontSize: "16pt" }}>
                     Stack <span style={{ color: "#1976d2" }}>DL</span>

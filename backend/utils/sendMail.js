@@ -67,18 +67,18 @@ const sendEmailRegister = (to, url, text) => {
               width: 100%;
             }
             span {
-              color: #ffc107;
+              color: rgba(25, 118, 210, 1);
             }
             button {
               padding: 1em 6em;
               border-radius: 5px;
               border: 0;
-              background-color: hsl(45, 100%, 51%);
+              background-color: rgba(25, 118, 210, 1);
               transition: all 0.3s ease-in;
               cursor: pointer;
             }
             button:hover {
-              background-color: hsl(45, 70%, 51%);
+              background-color: rgba(25, 118, 210, 0.8);
               transition: all 0.3s ease-in;
             }
             .spacing {
@@ -166,18 +166,18 @@ const sendEmailReset = (to, url, text, name) => {
               width: 100%;
             }
             span {
-              color: #ffc107;
+                color: rgba(25, 118, 210, 1);
             }
             button {
               padding: 1em 6em;
               border-radius: 5px;
               border: 0;
-              background-color: #1976d2;
+              background-color: rgba(25, 118, 210, 1);
               transition: all 0.3s ease-in;
               cursor: pointer;
             }
             button:hover {
-              background-color: #1976d2;
+              background-color: rgba(25, 118, 210, 0.8);
               transition: all 0.3s ease-in;
             }
             .spacing {
